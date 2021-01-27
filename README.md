@@ -19,11 +19,10 @@
  - Omar Kassem 
  - Mohamed Abd El-hamid
  - Do'aa El-Mekkawy
- **
 
 ## **Contact us** :
 
 > Agriola.info@gmail.com
 >
--- To be updated.
+-- To be updated soon.
 
