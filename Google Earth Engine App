@@ -1,0 +1,264 @@
+//Results from time-series analysis of Landsat images in characterizing global forest extent and change.
+var gfc2019 = ee.Image("UMD/hansen/global_forest_change_2019_v1_7")
+//region of interest is delat of Egypt 
+var delta=ee.Geometry.Polygon(
+        [[[30.469643638427883, 31.450819992635658],
+          [30.216958091552883, 31.25849086743306],
+          [29.991738364990383, 31.272577062520014],
+          [29.931313560302883, 31.202125067715457],
+          [29.832436607177883, 31.070474241780822],
+          [29.491860435302883, 30.90565409363286],
+          [29.294106529052883, 30.811343444159508],
+          [29.953286216552883, 30.598805898627774],
+          [31.238686607177883, 30.06304490537854],
+          [32.29337410717788, 31.079883930397045],
+          [31.930825279052883, 31.488301723179053],
+          [31.392495200927883, 31.50235350217253],
+          [30.958535239990383, 31.57726064620009]]]);
+var lossImage = gfc2019.select(['loss']);
+var lossAreaImage = lossImage.multiply(ee.Image.pixelArea());
+var lossYear = gfc2019.select(['lossyear']);
+
+var drawingTools = Map.drawingTools();
+drawingTools.setShown(false);
+while (drawingTools.layers().length() > 0) {
+  var layer = drawingTools.layers().get(0);
+  drawingTools.layers().remove(layer);
+}
+var dummyGeometry =
+    ui.Map.GeometryLayer({geometries: null, name: 'geometry', color: '23cba7'});
+
+drawingTools.layers().add(dummyGeometry);
+function clearGeometry() {
+  var layers = drawingTools.layers();
+  layers.get(0).geometries().remove(layers.get(0).geometries().get(0));
+}
+function drawRectangle() {
+  clearGeometry();
+  drawingTools.setShape('rectangle');
+  drawingTools.draw();
+}
+
+function drawPolygon() {
+  clearGeometry();
+  drawingTools.setShape('polygon');
+  drawingTools.draw();
+}
+
+function drawPoint() {
+  clearGeometry();
+  drawingTools.setShape('point');
+  drawingTools.draw();
+}
+Map.setCenter(31,31,10);
+Map.style().set('cursor', 'crosshair');
+var chartPanel1 = ui.Panel({
+  style:
+      {height: '235px', width: '600px', position: 'bottom-right', shown: false}
+});
+Map.add(chartPanel1);
+//function to show ndvi analysis 
+function chartNdviTimeSeries() {
+  // Make the chart panel visible the first time a geometry is drawn.
+  if (!chartPanel1.style().get('shown')) {
+    chartPanel1.style().set('shown', true);
+  }
+
+  // Get the drawn geometry; it will define the reduction region.
+  var aoi = drawingTools.layers().get(0).getEeObject();
+
+  // Set the drawing mode back to null; turns drawing off.
+  drawingTools.setShape(null);
+
+  // Reduction scale is based on map scale to avoid memory/timeout errors.
+  var mapScale = Map.getScale();
+  var scale = mapScale > 5000 ? mapScale * 2 : 5000;
+
+  // Chart NDVI time series for the selected area of interest.
+  var chart = ui.Chart.image
+                  .seriesByRegion({
+                    imageCollection: ee.ImageCollection('MODIS/006/MOD13A2'),
+                    regions: aoi,
+                    reducer: ee.Reducer.mean(),
+                    band: 'NDVI',
+                    scale: scale,
+                    xProperty: 'system:time_start'
+                  })
+                  .setOptions({
+                    titlePostion: 'none',
+                    legend: {position: 'none'},
+                    hAxis: {title: 'Date'},
+                    vAxis: {title: 'NDVI (x1e4)'},
+                    series: {0: {color: '23cba7'}}
+                  });
+
+  // Replace the existing chart in the chart panel with the new chart.
+  chartPanel1.widgets().reset([chart]);
+}
+
+function chartlosses() {
+  // Make the chart panel visible the first time a geometry is drawn.
+  if (!chartPanel1.style().get('shown')) {
+    chartPanel1.style().set('shown', true);
+  }
+
+  // Get the drawn geometry; it will define the reduction region.
+  var aoi = drawingTools.layers().get(0).getEeObject();
+
+  // Set the drawing mode back to null; turns drawing off.
+  drawingTools.setShape(null);
+
+  // Reduction scale is based on map scale to avoid memory/timeout errors.
+  var mapScale = Map.getScale();
+  var scale = mapScale > 5000 ? mapScale * 2 : 5000;
+var lossByYear = lossAreaImage.addBands(lossYear).reduceRegion({
+  reducer: ee.Reducer.sum().group({
+    groupField: 1
+    }),
+  geometry: aoi,
+  scale: 30,
+  maxPixels: 1e9,
+  bestEffort:true
+});
+var statsFormatted = ee.List(lossByYear.get('groups'))
+  .map(function(el) {
+    var d = ee.Dictionary(el);
+    return [ee.Number(d.get('group')).format("20%02d"), d.get('sum')];
+  });
+var statsDictionary = ee.Dictionary(statsFormatted.flatten());
+print(statsDictionary);
+// Chart Losses of vegetation areas  for the selected area of interest.
+var chart1 =ui.Chart.array.values({
+  array: statsDictionary.values(),
+  axis: 0,
+  xLabels: statsDictionary.keys()
+}).setChartType('ColumnChart')
+  .setOptions({
+    title:'  Yearly Vegetation Loss\n total losses for detecated area = 67645.81176470588',
+    hAxis: {title: 'Year', format: '####'},
+    vAxis: {title: 'Area (square meters)'},
+    legend: { position: "none" },
+    lineWidth: 1,
+    pointSize: 3
+   });  // Replace the existing chart in the chart panel with the new chart.
+ 
+ chartPanel1.widgets().reset([chart1]);
+ 
+}
+
+// drawingTools.onDraw(ui.util.debounce(chartNdviTimeSeries, 500));
+// drawingTools.onEdit(ui.util.debounce(chartNdviTimeSeries, 500));
+ var analysis=['NDVI','Losses']
+ 
+
+var symbol = {
+  rectangle: '⬛',
+  polygon: '🔺',
+  point: '📍',
+};
+var controlPanel = ui.Panel({
+  widgets: [ui.Label('1. Select analysis and drawing mode.')
+    ,ui.Select({
+  style: {stretch: 'horizontal'},
+  items:analysis,
+  onChange:function(analysis){
+    if (analysis=='NDVI'){
+drawingTools.onDraw(ui.util.debounce(chartNdviTimeSeries, 500));
+drawingTools.onEdit(ui.util.debounce(chartNdviTimeSeries, 500));}
+    else if (analysis=='Losses'){
+      drawingTools.onDraw(ui.util.debounce(chartlosses, 500));
+drawingTools.onEdit(ui.util.debounce(chartlosses, 500));
+    }
+  }}).setPlaceholder('Choose an analysis...'),
+    ui.Button({
+      label: symbol.rectangle + ' Rectangle',
+      onClick: drawRectangle,
+      style: {stretch: 'horizontal'}
+    }),
+    ui.Button({
+      label: symbol.polygon + ' Polygon',
+      onClick: drawPolygon,
+      style: {stretch: 'horizontal'}
+    }),
+    ui.Button({
+      label: symbol.point + ' Point',
+      onClick: drawPoint,
+      style: {stretch: 'horizontal'}
+    }),
+    ui.Label('2. Draw a geometry.'),
+    ui.Label('3. Wait for chart to render.'),
+    ui.Label(
+        '4. Repeat 1-3 or edit/move\ngeometry for a new chart.',
+        {whiteSpace: 'pre'})
+  ],
+  style: {position: 'bottom-left'},
+  layout: null,
+});
+/////////////////////////////////////////////////
+// add a panel for visualization 
+var panel = ui.Panel({style: {width: '200px'}})
+    .add(ui.Label('Delta visualization'));
+var treeCover = gfc2019.select(['treecover2000']);
+var lossImage = gfc2019.select(['loss']);
+var gainImage = gfc2019.select(['gain']);
+
+var checkbox1 = ui.Checkbox('Show vegetation areas',true);
+
+checkbox1.onChange(function(checked) {
+  // Shows or hides the first map layer based on the checkbox's value.
+  Map.layers().get(0).setShown(checked);
+});
+var checkbox2 = ui.Checkbox('Show gain areas', true);
+
+checkbox2.onChange(function(checked) {
+  // Shows or hides the first map layer based on the checkbox's value.
+  Map.layers().get(1).setShown(checked);
+});
+
+var checkbox3 = ui.Checkbox('Show losses areas', true);
+
+checkbox3.onChange(function(checked) {
+  // Shows or hides the first map layer based on the checkbox's value.
+  Map.layers().get(2).setShown(checked);
+});
+
+var slider1 = ui.Slider();
+
+slider1.setValue(0.9);  // Set a default value.
+slider1.onChange(function(value) {
+  Map.layers().get(0).setOpacity(value);
+});
+var slider2 = ui.Slider();
+
+slider2.setValue(0.9);  // Set a default value.
+slider2.onChange(function(value) {
+  Map.layers().get(1).setOpacity(value);
+});
+var slider3 = ui.Slider();
+
+slider3.setValue(0.9);  // Set a default value.
+slider3.onChange(function(value) {
+  Map.layers().get(2).setOpacity(value);
+});
+
+// Add the tree cover layer in green.
+Map.addLayer(treeCover.updateMask(treeCover).clip(delta),
+    {palette: ['000000', '00FF00'], max: 100}, 'vegetation Cover');
+
+// Add the gain layer in blue.
+Map.addLayer(gainImage.updateMask(gainImage).clip(delta),
+            {palette: ['0000FF']}, 'Gain');
+
+// Add the loss layer in red.
+Map.addLayer(lossImage.updateMask(lossImage).clip(delta),
+            {palette: ['FF0000']}, 'Loss');
+
+Map.add(controlPanel);
+
+panel.widgets().set(1, checkbox1);
+panel.widgets().set(2,slider1);
+panel.widgets().set(3, checkbox2);
+panel.widgets().set(4,slider2);
+panel.widgets().set(5, checkbox3);
+panel.widgets().set(6,slider3);
+ ui.root.add(panel);
