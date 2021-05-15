@@ -6,6 +6,7 @@
 1. Illegal Urban sprawl detection
 2. Precision agriculture servies
 3. Data analytics 
+
 ***What are the technologies we use?***
 
 
