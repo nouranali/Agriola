@@ -8,6 +8,10 @@
 3. Data analytics 
 
 ***What are the technologies we use?***
+### Agriola is built with cutting-edge technologies, it's an AI powered platform. 
+
+- Google Earth Engine API application to show analysis in real time, available for download
+- AI powered Precision Agriculture services and analysis reports (Plant disease, anomaly detection, crop yield estimation and counting) build with Machine and Deep Learning using (Keras, Tensorflow, Python, Scikit Learn and OpenCV)
 
 
 ## Team Members:
