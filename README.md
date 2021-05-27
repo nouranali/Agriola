@@ -1,6 +1,6 @@
 # **Agriola**
 
-## Graduation project , class 2021 - Computers and systems engineering Dept. Mansoura University.
+## Graduation project ,Class 2021 - Computers and systems engineering Dept. Mansoura University.
 ## ***What's Agriola?***
 ### An Agri-Tech platform powered by cutting edge AI technologies and computer vision offering
 1. Illegal Urban sprawl detection
@@ -31,5 +31,3 @@
 
 > Agriola.info@gmail.com
 >
--- To be updated soon.
-
