@@ -16,17 +16,16 @@
 
 ## Team Members:
 
- - Nouran Ali
- - Ro'aa Mohammed
- - Fatma El-zahraa Taysir
- - Bassant Ra'faat
- - Aya Adel
+ - Nouran Ali  - ML Engineer & Data Scientist  "Team Leader"
+ - Ro'aa Mohammed - ML & Cloud Engineer 
+ - Fatma El-zahraa Taysir- Web dev. & Cloud Engineer  "Project Manager"
+ - Bassant Ra'faat - ML Engineer & Data Scientist
+ - Aya Adel  - Web dev.
  ## Additional helping members
  
- - Eslam El gendy
- - Omar Kassem 
- - Mohamed Abd El-hamid
- - Do'aa El-Mekkawy
+ - Eslam El gendy  - ML 
+ - Omar Kassem - Front End dev.
+ - Do'aa El-Mekkawy  - UI/UX designer
 
 ## **Contact us** :
 
