@@ -17,9 +17,9 @@
 ## Team Members:
 
  - Nouran Ali  - ML Engineer & Data Scientist  "Team Leader"
- - Ro'aa Mohammed - ML & Cloud Engineer 
  - Fatma El-zahraa Taysir- Web dev. & Cloud Engineer  "Project Manager"
  - Bassant Ra'faat - ML Engineer & Data Scientist
+ - Ro'aa Mohammed - ML & Cloud Engineer 
  - Aya Adel  - Web dev.
  ## Additional helping members
  
