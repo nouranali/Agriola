@@ -21,7 +21,7 @@
  - Bassant Ra'faat - ML Engineer & Data Scientist
  - Ro'aa Mohammed - ML & Cloud Engineer 
  - Aya Adel  - Web dev.
- ## Additional helping members
+ ## Unofficial team members
  
  - Eslam El gendy  - ML Engineer
  - Omar Kassem - Front End dev.
