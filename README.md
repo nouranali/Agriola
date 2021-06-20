@@ -26,6 +26,8 @@
  - Eslam El gendy  - ML Engineer
  - Omar Kassem - Front End dev.
  - Do'aa El-Mekkawy  - UI/UX designer
+ 
+## Credits to Eng.Ahmed Saad for his amazing help in the mobile app 
 
 ## **Contact us** :
 
