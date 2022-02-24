@@ -1,6 +1,7 @@
 # **Agriola**
 
 ## Graduation project ,Class 2021 - Computers and Systems Engineering Dept. Mansoura University.
+## 2nd place winners in Dell Envision the future 2020/2021 
 ## ***What's Agriola?***
 ### An Agri-Tech platform powered by cutting edge AI technologies and computer vision offering
 1. Illegal Urban sprawl detection
